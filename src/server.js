@@ -34,6 +34,11 @@ app.get("/posts", (req, res) => {
 
 app.post("/posts", (req,res) => {
     let newPost = req.body;
+    const {title, content, coverUrl} = newPost;
+    if(title.length === 0 || content.length === 0 || coverUrl.length === 0){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     newPost = {...newPost, id: posts.length +1, contentPreview: "", commentCount: 0}
     posts.push(newPost);
     res.send("post adicionado");
@@ -42,11 +47,19 @@ app.post("/posts", (req,res) => {
 app.get("/posts/:id", (req, res) => {
     const id =  req.params.id;
     const response = posts.find(n => n.id == id);   
+    if(response === undefined){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     res.send(response);
 });
 
 app.delete("/posts/:id", (req, res) => {
     const id =  req.params.id;
+    if(posts.find(n => n.id == id) === undefined){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     posts = posts.filter(n => n.id != id);  
     res.send(posts);
 });
@@ -55,6 +68,10 @@ app.put("/posts/:id", (req, res) => {
     const id =  req.params.id;
     const editInfo = req.body;
     const {content, coverUrl, title} = editInfo
+    if(title.length === 0 || content.length === 0 || coverUrl.length === 0){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     let editPost = posts.find(n => n.id == id);
     editPost = {...editPost, id: id, content: content, coverUrl: coverUrl, title: title}
     posts = posts.filter(n => n.id != id);  
@@ -64,6 +81,10 @@ app.put("/posts/:id", (req, res) => {
 
 app.get("/posts/:id/comments", (req, res) => {
     const id = req.params.id;
+    if(posts.find(n => n.id == id) === undefined){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     const response = comments.filter(n => n.postId == id);
     res.send(response)
 })
@@ -71,6 +92,11 @@ app.get("/posts/:id/comments", (req, res) => {
 app.post("/posts/:id/comments", (req, res) => {
     const id = req.params.id;
     let newComment = req.body;
+    const {content, author} = newComment
+    if(content.length === 0 || author.length === 0){
+        res.status(400).send({ error: 'Something failed!' });
+        return;
+    }
     newComment = {... newComment, postId: id, id: comments.length + 1};
     comments.push(newComment);
     let commentPost = posts.find(n => n.id == id);
