@@ -34,7 +34,7 @@ app.get("/posts", (req, res) => {
 
 app.post("/posts", (req,res) => {
     let newPost = req.body;
-    newPost = {...newPost, id: posts.length +1, contentPreview: "", content: "", commentCount: 0}
+    newPost = {...newPost, id: posts.length +1, contentPreview: "", commentCount: 0}
     posts.push(newPost);
     res.send("post adicionado");
 });
@@ -43,6 +43,23 @@ app.get("/posts/:id", (req, res) => {
     const id =  req.params.id;
     const response = posts.find(n => n.id == id);   
     res.send(response);
+});
+
+app.delete("/posts/:id", (req, res) => {
+    const id =  req.params.id;
+    posts = posts.filter(n => n.id != id);  
+    res.send(posts);
+});
+
+app.put("/posts/:id", (req, res) => {
+    const id =  req.params.id;
+    const editInfo = req.body;
+    const {content, coverUrl, title} = editInfo
+    let editPost = posts.find(n => n.id == id);
+    editPost = {...editPost, id: id, content: content, coverUrl: coverUrl, title: title}
+    posts = posts.filter(n => n.id != id);  
+    posts.push(editPost);
+    res.send(posts);
 });
 
 app.get("/posts/:id/comments", (req, res) => {
@@ -56,6 +73,10 @@ app.post("/posts/:id/comments", (req, res) => {
     let newComment = req.body;
     newComment = {... newComment, postId: id, id: comments.length + 1};
     comments.push(newComment);
+    let commentPost = posts.find(n => n.id == id);
+    commentPost = {...commentPost, id: id, commentCount: commentPost.commentCount +1};
+    posts = posts.filter(n => n.id != id);  
+    posts.push(commentPost);
     res.send(newComment);
 })
 
