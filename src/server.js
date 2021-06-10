@@ -51,4 +51,12 @@ app.get("/posts/:id/comments", (req, res) => {
     res.send(response)
 })
 
+app.post("/posts/:id/comments", (req, res) => {
+    const id = req.params.id;
+    let newComment = req.body;
+    newComment = {... newComment, postId: id, id: comments.length + 1};
+    comments.push(newComment);
+    res.send(newComment);
+})
+
 app.listen(4000);
