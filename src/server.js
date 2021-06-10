@@ -14,14 +14,22 @@ let posts = [{
     commentCount: 2
   }]
 
+let comments = [
+    {
+        id: 1,
+        postId: 1,
+        author: 'João',
+        content: 'Muito bom esse post! Tá de parabéns'
+      }, {
+        id: 2,
+        postId: 1,
+        author: 'Maria',
+        content: 'Como faz pra dar palmas?'
+      }
+]
+
 app.get("/posts", (req, res) => {
     res.send(posts);
-});
-
-app.get("/posts/:id", (req, res) => {
-    const id =  req.params.id;
-    const response = posts.filter(n => n.id == id);   
-    res.send(response[0]);
 });
 
 app.post("/posts", (req,res) => {
@@ -29,6 +37,18 @@ app.post("/posts", (req,res) => {
     newPost = {...newPost, id: posts.length +1, contentPreview: "", content: "", commentCount: 0}
     posts.push(newPost);
     res.send("post adicionado");
+});
+
+app.get("/posts/:id", (req, res) => {
+    const id =  req.params.id;
+    const response = posts.find(n => n.id == id);   
+    res.send(response);
+});
+
+app.get("/posts/:id/comments", (req, res) => {
+    const id = req.params.id;
+    const response = comments.filter(n => n.postId == id);
+    res.send(response)
 })
 
 app.listen(4000);
